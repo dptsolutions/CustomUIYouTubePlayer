@@ -1,0 +1,13 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="YoutubePlayerControlsAnimation">
+        <item name="android:windowEnterAnimation">@anim/youtube_player_controls_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/youtube_player_controls_fade_out</item>
+    </style>
+
+</resources>
