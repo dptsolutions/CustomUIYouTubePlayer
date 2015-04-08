@@ -13,5 +13,5 @@ The YouTubePlayerActivity expects your Google API key for the YouTubePlayer to b
 
 ##Anything I need to watch out for?
 * Currently, the YouTubePlayerActivity crashes on orientation change. So lock it to landscape in your manifest. (Fixing this is on the TODO list)
-* The cueVideo() method to load a video seems buggy and not always work. Stick with loadVideo()
+* The cueVideo() method to load a video seems buggy and not always work. Stick with loadVideo().
 
