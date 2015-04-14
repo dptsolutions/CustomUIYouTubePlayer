@@ -7,6 +7,18 @@ While the API allows for you to implement custom controls for the YouTubePlayer,
 Fortunately, you can get around this "feature" by using a [PopupWindow](http://developer.android.com/reference/android/widget/PopupWindow.html) to contain the controls that will be drawn on top of the YouTubePlayerView. A PopupWindow doesn't seem to trigger the error.
 
 ##Cool, so how do I use this?
+
+####Running the demo app
+
+1. Follow the [instructions](https://developers.google.com/youtube/android/player/register) to generate API keys (using both the debug and release keystores) for Android apps at the Google Developer Console.
+2. Clone the repo.
+3. Create a gradle.properties file in the root of the project, add the following properties, and initially set their values to the API key(s) you generated.
+  * *youtubeDebugApiKey*
+  * *youtubeReleaseApiKey*
+4. Import the project into Android Studio.
+5. Build and run on a device that has the Youtube app installed.
+
+####Using the code in your own application
 Basically, just copy the YouTubePlayerActivity in the app to your own app, and all it's related resources. Then style it however you wish. 
 
 The YouTubePlayerActivity expects your Google API key for the YouTubePlayer to be located in the BuildConfig.GOOGLE_API_KEY field, and the build script expects the values for the key to be found in your gradle.properties file. See the build.gradle for the app for details.
