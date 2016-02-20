@@ -19,17 +19,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.android.youtube.player.YouTubePlayerView;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 /**
  * Activity for playing YouTube videos in Fullscreen landscape
  */
-public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, YouTubePlayer.PlaybackEventListener {
+public class YouTubePlayerActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, YouTubePlayer.PlaybackEventListener {
 
     YouTubePlayerFragment youtubePlayerFragment;
 
@@ -38,7 +38,6 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
     protected PlayerControlsPopupWindow playerControls;
 
     private YouTubePlayer youtubePlayer;
-    private YouTubePlayerView youtubePlayerView;
     private GestureDetectorCompat gestureDetector;
 
     private static final int RECOVERY_DIALOG_REQUEST = 1;
@@ -127,13 +126,7 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
         //so attach the touch listener for the player controls here,
         //after initializing the player earlier in the lifecycle
 
-        //If using YoutubePlayerFragment, the YoutubePlayerView is the root view of the fragment.
-        youtubePlayerView = (YouTubePlayerView) youtubePlayerFragment.getView();
-        //If using YoutubePlayerSupportFragment, the YoutubePlayerView is the first child of the root view
-        //ViewGroup playerView = (ViewGroup)youtubePlayerFragment.getView();
-        //youtubePlayerView = (YouTubePlayerView)playerView.getChildAt(0);
-
-        youtubePlayerView.setOnTouchListener(onPlayerTouchedListener);
+        if ( youtubePlayerFragment != null && youtubePlayerFragment.getView() != null ) youtubePlayerFragment.getView().setOnTouchListener(onPlayerTouchedListener);
 
         //Want to make sure we start in the state where things will be shown when we hit onResume
         if(playerControls.isShowing()) {
@@ -147,41 +140,43 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
         Log.d(TAG, "In onResume. Post runnable to root view of youtubePlayerFragment, that will initially show the player controls");
         //We have to wait till everything is running before we show the PopupWindow, otherwise you get an exception.
         //This runnable will run once the View is attached to the window
-        youtubePlayerFragment.getView().post(new Runnable() {
-            @Override
-            public void run() {
-                if (!isFinishing()) {
-                    final View decorView = getWindow().getDecorView();
+        if ( youtubePlayerFragment != null && youtubePlayerFragment.getView() != null ) {
+            youtubePlayerFragment.getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isFinishing()) {
+                        final View decorView = getWindow().getDecorView();
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        //Have to use Sticky Immersive mode on Lollipop devices, otherwise when the Status Bar is shown
-                        //the YoutubePlayer will throw the YouTubePlayer.ErrorReason.UNAUTHORIZED_OVERLAY error and stop playback.
-                        //This doesn't happen on KitKat but since KitKat has Immersive mode, we'll use it there as well
-                        decorView.setSystemUiVisibility(HIDE_STATUS_BAR_FLAGS_IMMERSIVE);
-                    } else {
-                        //For Jelly Bean, things are a little different. Here we're faking Sticky Immersive mode. The user can swipe down
-                        //from the top of the screen at any time and unhide the Status Bar, and it'll never go away. So detect
-                        //when the fullscreen flag gets removed, and post a delayed runnable that will hide the system bar again
-                        //just like Sticky Immersive mode
-                        decorView.setSystemUiVisibility(HIDE_STATUS_BAR_FLAGS);
-                        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-                            @Override
-                            public void onSystemUiVisibilityChange(int visibility) {
-                                if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                                    decorView.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            decorView.setSystemUiVisibility(HIDE_STATUS_BAR_FLAGS);
-                                        }
-                                    }, HIDE_STATUS_BAR_DELAY_MILLIS);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            //Have to use Sticky Immersive mode on Lollipop devices, otherwise when the Status Bar is shown
+                            //the YoutubePlayer will throw the YouTubePlayer.ErrorReason.UNAUTHORIZED_OVERLAY error and stop playback.
+                            //This doesn't happen on KitKat but since KitKat has Immersive mode, we'll use it there as well
+                            decorView.setSystemUiVisibility(HIDE_STATUS_BAR_FLAGS_IMMERSIVE);
+                        } else {
+                            //For Jelly Bean, things are a little different. Here we're faking Sticky Immersive mode. The user can swipe down
+                            //from the top of the screen at any time and unhide the Status Bar, and it'll never go away. So detect
+                            //when the fullscreen flag gets removed, and post a delayed runnable that will hide the system bar again
+                            //just like Sticky Immersive mode
+                            decorView.setSystemUiVisibility(HIDE_STATUS_BAR_FLAGS);
+                            decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+                                @Override
+                                public void onSystemUiVisibilityChange(int visibility) {
+                                    if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                                        decorView.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                decorView.setSystemUiVisibility(HIDE_STATUS_BAR_FLAGS);
+                                            }
+                                        }, HIDE_STATUS_BAR_DELAY_MILLIS);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+                        toggleControlsVisibility();
                     }
-                    toggleControlsVisibility();
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -192,7 +187,6 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
         playerControls.dismiss();
         //If activity is restarted, player will be paused. So reset the button state on our way out
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.PLAY);
-
     }
 
     @Override
@@ -275,8 +269,6 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
         //Since the video has ended, set the controls to the restart state
         playerControls.setSeekBarPosition(playerControls.getSeekBarMax());
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.REPLAY);
-
-
     }
 
     @Override
@@ -350,7 +342,9 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
             playerControls.dismiss();
         } else {
             Log.d(TAG, "In toggleControlsVisibility. Showing player controls");
-            playerControls.showAtLocation(youtubePlayerFragment.getView(), Gravity.BOTTOM, 0, 0);
+            if ( youtubePlayerFragment != null && youtubePlayerFragment.getView() != null ) {
+                playerControls.showAtLocation(youtubePlayerFragment.getView(), Gravity.BOTTOM, 0, 0);
+            }
         }
     }
 
@@ -361,7 +355,6 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
     private void stopSeekBarUpdates() {
         seekBarPositionHandler.removeCallbacks(seekBarPositionRunnable);
     }
-
 
     /**
      * Class containing the player controls. Has to be a PopupWindow due to the YoutubePlayer library
@@ -386,7 +379,6 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
             public static final int PAUSE = 0;
             public static final int REPLAY = 2;
         }
-
 
         public PlayerControlsPopupWindow(Context context) {
             super(View.inflate(context, R.layout.youtube_player_controls, null),
@@ -417,8 +409,6 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
                 }
             });
             elapsedTime = (TextView) getContentView().findViewById(R.id.elapsed_time);
-
-
         }
 
         /**
@@ -521,6 +511,9 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
             youtubePlayer.seekToMillis(seekBar.getProgress());
             if(youtubePlayer.isPlaying()) {
                 scheduleSeekBarUpdate();
+            }
+            if ( youtubePlayerFragment != null && youtubePlayerFragment.getView() != null ) {
+                playerControls.showAtLocation(youtubePlayerFragment.getView(), Gravity.BOTTOM, 0, 0);
             }
         }
     }
