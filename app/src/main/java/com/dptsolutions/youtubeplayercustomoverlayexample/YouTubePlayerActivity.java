@@ -19,7 +19,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
@@ -29,7 +28,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 /**
  * Activity for playing YouTube videos in Fullscreen landscape
  */
-public class YouTubePlayerActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, YouTubePlayer.PlaybackEventListener {
+public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, YouTubePlayer.PlaybackEventListener {
 
     YouTubePlayerFragment youtubePlayerFragment;
 
@@ -125,8 +124,10 @@ public class YouTubePlayerActivity extends YouTubeBaseActivity implements YouTub
         //The YoutubePlayerView in the YoutubePlayerFragment seems to eat all touches,
         //so attach the touch listener for the player controls here,
         //after initializing the player earlier in the lifecycle
-
-        if ( youtubePlayerFragment != null && youtubePlayerFragment.getView() != null ) youtubePlayerFragment.getView().setOnTouchListener(onPlayerTouchedListener);
+        if ( isYoutubePlayerViewReady() ) {
+            //noinspection ConstantConditions
+            youtubePlayerFragment.getView().setOnTouchListener(onPlayerTouchedListener);
+        }
 
         //Want to make sure we start in the state where things will be shown when we hit onResume
         if(playerControls.isShowing()) {
@@ -140,7 +141,8 @@ public class YouTubePlayerActivity extends YouTubeBaseActivity implements YouTub
         Log.d(TAG, "In onResume. Post runnable to root view of youtubePlayerFragment, that will initially show the player controls");
         //We have to wait till everything is running before we show the PopupWindow, otherwise you get an exception.
         //This runnable will run once the View is attached to the window
-        if ( youtubePlayerFragment != null && youtubePlayerFragment.getView() != null ) {
+        if ( isYoutubePlayerViewReady() ) {
+            //noinspection ConstantConditions
             youtubePlayerFragment.getView().post(new Runnable() {
                 @Override
                 public void run() {
@@ -342,7 +344,7 @@ public class YouTubePlayerActivity extends YouTubeBaseActivity implements YouTub
             playerControls.dismiss();
         } else {
             Log.d(TAG, "In toggleControlsVisibility. Showing player controls");
-            if ( youtubePlayerFragment != null && youtubePlayerFragment.getView() != null ) {
+            if ( isYoutubePlayerViewReady() ) {
                 playerControls.showAtLocation(youtubePlayerFragment.getView(), Gravity.BOTTOM, 0, 0);
             }
         }
@@ -354,6 +356,10 @@ public class YouTubePlayerActivity extends YouTubeBaseActivity implements YouTub
 
     private void stopSeekBarUpdates() {
         seekBarPositionHandler.removeCallbacks(seekBarPositionRunnable);
+    }
+
+    private boolean isYoutubePlayerViewReady() {
+        return youtubePlayerFragment != null && youtubePlayerFragment.getView() != null;
     }
 
     /**
@@ -512,7 +518,7 @@ public class YouTubePlayerActivity extends YouTubeBaseActivity implements YouTub
             if(youtubePlayer.isPlaying()) {
                 scheduleSeekBarUpdate();
             }
-            if ( youtubePlayerFragment != null && youtubePlayerFragment.getView() != null ) {
+            if ( isYoutubePlayerViewReady() ) {
                 playerControls.showAtLocation(youtubePlayerFragment.getView(), Gravity.BOTTOM, 0, 0);
             }
         }
