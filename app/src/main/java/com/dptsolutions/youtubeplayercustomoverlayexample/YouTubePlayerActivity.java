@@ -61,12 +61,6 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
             scheduleSeekBarUpdate();
         }
     };
-    private View.OnTouchListener onPlayerTouchedListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            return gestureDetector.onTouchEvent(event);
-        }
-    };
 
     private GestureDetector.OnGestureListener onGestureListener = new GestureDetector.OnGestureListener() {
 
@@ -120,14 +114,7 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "In onStart. Attach touch listener to YoutubePlayerView in youtubePlayerFragment");
-        //The YoutubePlayerView in the YoutubePlayerFragment seems to eat all touches,
-        //so attach the touch listener for the player controls here,
-        //after initializing the player earlier in the lifecycle
-        if ( isYoutubePlayerViewReady() ) {
-            //noinspection ConstantConditions
-            youtubePlayerFragment.getView().setOnTouchListener(onPlayerTouchedListener);
-        }
+        Log.d(TAG, "In onStart. Ensure playerControls are dismissed");
 
         //Want to make sure we start in the state where things will be shown when we hit onResume
         if(playerControls.isShowing()) {
@@ -333,6 +320,12 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
         }
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        Log.d(TAG, "in dispatchTouchEvent");
+        return gestureDetector.onTouchEvent(event);
+    }
+
     private void initializeYoutubePlayer() {
         Log.d(TAG, "In initializeYoutubePlayer");
         youtubePlayerFragment.initialize(BuildConfig.GOOGLE_API_KEY, this);
@@ -380,7 +373,7 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
         private static final String LESS_THAN_HUNDRED_MINUTES_FORMAT = "mm:ss";
         private static final String HUNDRED_MINUTES_FORMAT = "mmm:ss";
 
-        private class PlayPauseButtonState {
+        private final class PlayPauseButtonState {
             public static final int PLAY = 1;
             public static final int PAUSE = 0;
             public static final int REPLAY = 2;
