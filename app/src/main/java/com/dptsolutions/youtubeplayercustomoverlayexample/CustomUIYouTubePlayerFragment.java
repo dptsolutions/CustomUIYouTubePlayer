@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
@@ -70,7 +71,8 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
         @Override
         public boolean onDown(MotionEvent e) {
-            return false;
+            toggleControlsVisibility();
+            return true;
         }
 
         @Override
@@ -80,8 +82,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            toggleControlsVisibility();
-            return true;
+            return false;
         }
 
         @Override
@@ -131,18 +132,11 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        ArrayList<View> touchables = new ArrayList<>(1);
-        touchables.add(view);
-        view.addTouchables(touchables);
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "in dispatchTouchEvent");
-                return gestureDetector.onTouchEvent(event);
-            }
-        });
+        YouTubePlayerViewWrapper wrapper = new YouTubePlayerViewWrapper(getActivity());
+        wrapper.setId(R.id.youtube_view_wrapper);
+        wrapper.addView(view);
 
-        return view;
+        return wrapper;
     }
 
     @Override
@@ -549,6 +543,18 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
             if ( isYoutubePlayerViewReady() ) {
                 playerControls.showAtLocation(getView(), Gravity.BOTTOM, 0, 0);
             }
+        }
+    }
+
+    private class YouTubePlayerViewWrapper extends FrameLayout {
+
+        public YouTubePlayerViewWrapper(Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean dispatchTouchEvent(MotionEvent ev) {
+            return gestureDetector.onTouchEvent(ev);
         }
     }
 }
