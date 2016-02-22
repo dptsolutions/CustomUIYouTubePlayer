@@ -131,10 +131,8 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
         YouTubePlayerViewWrapper wrapper = new YouTubePlayerViewWrapper(getActivity());
-        wrapper.setId(R.id.youtube_view_wrapper);
-        wrapper.addView(view);
+        wrapper.addView(super.onCreateView(inflater, container, savedInstanceState));
 
         return wrapper;
     }
@@ -261,13 +259,13 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
                                         boolean wasRestored) {
-        Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment.onInitializationSuccess. wasRestored = %s", wasRestored));
+        Log.d(TAG, String.format("In YouTubePlayer.OnInitializedListener.onInitializationSuccess. wasRestored = %s", wasRestored));
         youtubePlayer = player;
         youtubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
         youtubePlayer.setPlayerStateChangeListener(this);
         youtubePlayer.setPlaybackEventListener(this);
         if (!wasRestored) {
-            Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment.onInitializationSuccess. Cueing video with id = %s", youtubeId));
+            Log.d(TAG, String.format("In YouTubePlayer.OnInitializedListener.onInitializationSuccess. Cueing video with id = %s", youtubeId));
             player.loadVideo(youtubeId);
         }
     }
@@ -275,7 +273,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider,
                                         YouTubeInitializationResult errorReason) {
-        Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment.onInitializationFailure. errorReason = %s", errorReason.toString()));
+        Log.d(TAG, String.format("In YouTubePlayer.OnInitializedListener.onInitializationFailure. errorReason = %s", errorReason.toString()));
         final Activity activity = getActivity();
         if(activity != null) {
             if (errorReason.isUserRecoverableError()) {
@@ -294,7 +292,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onLoading() {
-        Log.d(TAG, "In CustomUIYouTubePlayerFragment.onLoading");
+        Log.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onLoading");
         //Set controls to their initial state and lock them until we have all the information
         //necessary to fully set their state
         playerControls.setEnabled(false);
@@ -304,7 +302,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onLoaded(String videoId) {
-        Log.d(TAG, "In CustomUIYouTubePlayerFragment.onLoaded");
+        Log.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onLoaded");
         //Complete initializing controls and enable them for interaction
         playerControls.setSeekBarMax(youtubePlayer.getDurationMillis());
         playerControls.setEnabled(true);
@@ -312,13 +310,13 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onAdStarted() {
-        Log.d(TAG, "In CustomUIYouTubePlayerFragment.onAdStarted");
+        Log.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onAdStarted");
         playerControls.setEnabled(false);
     }
 
     @Override
     public void onVideoStarted() {
-        Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment.onVideoStarted. youtubePlayer.isPlaying(): %s", youtubePlayer.isPlaying()));
+        Log.d(TAG, String.format("In YouTubePlayer.PlayerStateChangeListener.onVideoStarted. youtubePlayer.isPlaying(): %s", youtubePlayer.isPlaying()));
         //We need to set button state to either play or pause, because if the video has ended and you scrub back
         //This callback fires but you won't necessarily actually be playing
         playerControls.setPlayPauseButtonState(youtubePlayer.isPlaying() ? PlayerControlsPopupWindow.PlayPauseButtonState.PAUSE : PlayerControlsPopupWindow.PlayPauseButtonState.PLAY);
@@ -326,7 +324,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onVideoEnded() {
-        Log.d(TAG, "In CustomUIYouTubePlayerFragment.onVideoEnded");
+        Log.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onVideoEnded");
         //Since the video has ended, set the controls to the restart state
         playerControls.setSeekBarPosition(playerControls.getSeekBarMax());
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.REPLAY);
@@ -334,7 +332,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
-        Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment.onError: %s", errorReason));
+        Log.d(TAG, String.format("In YouTubePlayer.PlayerStateChangeListener.onError: %s", errorReason));
         if(errorReason == YouTubePlayer.ErrorReason.UNEXPECTED_SERVICE_DISCONNECTION) {
             if(getActivity() != null) {
                 getActivity().finish();
@@ -348,27 +346,27 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onPlaying() {
-        Log.d(TAG, "In CustomUIYouTubePlayerFragment.onPlaying");
+        Log.d(TAG, "In YouTubePlayer.PlaybackEventListener.onPlaying");
         scheduleSeekBarUpdate();
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.PAUSE);
     }
 
     @Override
     public void onPaused() {
-        Log.d(TAG, "In CustomUIYouTubePlayerFragment.onPaused");
+        Log.d(TAG, "In YouTubePlayer.PlaybackEventListener.onPaused");
         stopSeekBarUpdates();
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.PLAY);
     }
 
     @Override
     public void onStopped() {
-        Log.d(TAG, "In CustomUIYouTubePlayerFragment.onStopped");
+        Log.d(TAG, "In YouTubePlayer.PlaybackEventListener.onStopped");
         stopSeekBarUpdates();
     }
 
     @Override
     public void onBuffering(boolean isBuffering) {
-        Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment.onBuffering, isBuffering = %s, youtubePlayer.isPlaying = %s", isBuffering, youtubePlayer.isPlaying()));
+        Log.d(TAG, String.format("In YouTubePlayer.PlaybackEventListener.onBuffering, isBuffering = %s, youtubePlayer.isPlaying = %s", isBuffering, youtubePlayer.isPlaying()));
 
         //If we're buffering, we're not playing. So we don't need to monitor the video's current position
         //until we stop buffering and start playing again
@@ -381,12 +379,12 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onSeekTo(int newPositionMillis) {
-        Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment.onSeekTo, newPositionMillis = %d", newPositionMillis));
+        Log.d(TAG, String.format("In YouTubePlayer.PlaybackEventListener.onSeekTo, newPositionMillis = %d", newPositionMillis));
     }
 
     /**
-     * Class containing the player controls. Has to be a PopupWindow due to the YoutubePlayer library
-     * disallowing you to draw a View on top of it.
+     * Class containing the player controls. Has to be a PopupWindow due to the YoutubePlayer
+     * library disallowing you to draw a View on top of it.
      */
     private class PlayerControlsPopupWindow extends PopupWindow implements SeekBar.OnSeekBarChangeListener {
 
@@ -546,6 +544,10 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         }
     }
 
+    /**
+     * Wrapper for YouTubePlayerView to expose touches, since attaching an OnTouchListener
+     * to YouTubePlayerView doesn't work
+     */
     private class YouTubePlayerViewWrapper extends FrameLayout {
 
         public YouTubePlayerViewWrapper(Context context) {
