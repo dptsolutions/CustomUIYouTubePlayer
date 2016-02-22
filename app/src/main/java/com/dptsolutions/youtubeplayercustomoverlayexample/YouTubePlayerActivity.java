@@ -352,7 +352,9 @@ public class YouTubePlayerActivity extends Activity implements YouTubePlayer.OnI
     }
 
     private boolean isYoutubePlayerViewReady() {
-        return youtubePlayerFragment != null && youtubePlayerFragment.getView() != null;
+        boolean isReady = youtubePlayerFragment != null && youtubePlayerFragment.getView() != null;
+        Log.d(TAG, String.format("isYoutubePlayerViewReady: %s", isReady));
+        return isReady;
     }
 
     /**
