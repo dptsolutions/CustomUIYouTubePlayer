@@ -28,8 +28,6 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
-import java.util.ArrayList;
-
 /**
  * Fragment for playing YouTube videos in Fullscreen landscape
  */
