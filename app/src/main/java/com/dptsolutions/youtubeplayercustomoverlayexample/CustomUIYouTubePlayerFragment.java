@@ -99,6 +99,13 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         }
     };
 
+    /**
+     * Create a new instance of CustomUiYouTubePlayerFragment
+     *
+     * @param youtubeId ID of YouTube video to play
+     *
+     * @return New instance of CustomUiYouTubePlayerFragment
+     */
     public static CustomUIYouTubePlayerFragment newInstance(String youtubeId) {
         CustomUIYouTubePlayerFragment frag = new CustomUIYouTubePlayerFragment();
         Bundle args = new Bundle();
