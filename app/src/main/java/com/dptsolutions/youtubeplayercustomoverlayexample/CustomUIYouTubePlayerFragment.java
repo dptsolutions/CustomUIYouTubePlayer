@@ -70,7 +70,6 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
         @Override
         public boolean onDown(MotionEvent e) {
-            toggleControlsVisibility();
             return true;
         }
 
@@ -81,7 +80,8 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            return false;
+            toggleControlsVisibility();
+            return true;
         }
 
         @Override
