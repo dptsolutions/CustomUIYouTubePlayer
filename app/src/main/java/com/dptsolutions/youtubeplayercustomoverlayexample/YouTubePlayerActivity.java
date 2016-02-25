@@ -18,10 +18,12 @@ public class YouTubePlayerActivity extends Activity  {
 
         setContentView(R.layout.activity_youtube_player);
 
-        Fragment playerFrag = CustomUIYouTubePlayerFragment.newInstance(getIntent().getStringExtra(EXTRA_VIDEO_YOUTUBE_ID));
-        FragmentManager mgr = getFragmentManager();
-        mgr.beginTransaction()
-                .add(R.id.fragment_container, playerFrag, PLAYER_FRAG_TAG)
-                .commit();
+        if(savedInstanceState == null) {
+            Fragment playerFrag = CustomUIYouTubePlayerFragment.newInstance(getIntent().getStringExtra(EXTRA_VIDEO_YOUTUBE_ID));
+            FragmentManager mgr = getFragmentManager();
+            mgr.beginTransaction()
+                    .add(R.id.fragment_container, playerFrag, PLAYER_FRAG_TAG)
+                    .commit();
+        }
     }
 }
