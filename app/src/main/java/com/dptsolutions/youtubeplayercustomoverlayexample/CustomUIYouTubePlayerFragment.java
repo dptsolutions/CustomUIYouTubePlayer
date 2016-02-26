@@ -39,6 +39,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     protected PlayerControlsPopupWindow playerControls;
     protected int lastPositionMillis;
+    protected boolean wasPlaying;
 
     private YouTubePlayer youtubePlayer;
     private GestureDetectorCompat gestureDetector;
@@ -49,8 +50,10 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     private static final int SEEK_BAR_UPDATE_INTERVAL = 1000;
     private static final int HIDE_STATUS_BAR_DELAY_MILLIS = 3000;
 
+    private static final String STATE_LAST_POSITION_MILLIS = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".state_last_millis";
+    private static final String STATE_WAS_PLAYING = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".state_was_playing";
+
     public static final String ARG_VIDEO_YOUTUBE_ID = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_video_youtube_id";
-    public static final String STATE_LAST_POSITION_MILLIS = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".state_last_millis";
 
     private Handler seekBarPositionHandler = new Handler();
     private Runnable seekBarPositionRunnable = new Runnable() {
@@ -126,8 +129,17 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         super.onCreate(savedInstanceState);
         Log.d(TAG, "In onCreate. Initialize controls");
 
-        lastPositionMillis = savedInstanceState == null ? 0
-                                                        : savedInstanceState.getInt(STATE_LAST_POSITION_MILLIS, 0);
+        if(savedInstanceState == null) {
+            //Init new instance
+            lastPositionMillis = 0;
+            wasPlaying = false;
+
+        } else {
+            //init saved instance
+            lastPositionMillis = savedInstanceState.getInt(STATE_LAST_POSITION_MILLIS, 0);
+            wasPlaying = savedInstanceState.getBoolean(STATE_WAS_PLAYING);
+        }
+
         youtubeId = getArguments().getString(ARG_VIDEO_YOUTUBE_ID);
         Log.d(TAG, String.format("youtubeId: %s", youtubeId));
         Log.d(TAG, String.format("lastPositionMillis: %s", lastPositionMillis));
@@ -216,6 +228,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public void onPause() {
         if(youtubePlayer != null) {
+            wasPlaying = youtubePlayer.isPlaying();
             youtubePlayer.pause();
             lastPositionMillis = youtubePlayer.getCurrentTimeMillis();
             Log.d(TAG, String.format("in onPause. Recording lastPositionMillis: %d", lastPositionMillis));
@@ -252,6 +265,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     public void onSaveInstanceState(Bundle bundle) {
         Log.d(TAG, String.format("in onSaveInstanceState. lastPositionMillis: %d", lastPositionMillis));
         bundle.putInt(STATE_LAST_POSITION_MILLIS, lastPositionMillis);
+        bundle.putBoolean(STATE_WAS_PLAYING, wasPlaying);
         super.onSaveInstanceState(bundle);
     }
 
@@ -341,6 +355,10 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         playerControls.setSeekBarMax(youtubePlayer.getDurationMillis());
         if (lastPositionMillis != 0) {
             youtubePlayer.seekToMillis(lastPositionMillis);
+            playerControls.setSeekBarPosition(lastPositionMillis);
+        }
+        if(wasPlaying) {
+            youtubePlayer.play();
         }
         playerControls.setEnabled(true);
     }
