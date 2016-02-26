@@ -56,14 +56,17 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     private Runnable seekBarPositionRunnable = new Runnable() {
         @Override
         public void run() {
-            Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment#seekBarPositionRunnable.run. Current time in millis is %d. Current length in millis is %d", youtubePlayer.getCurrentTimeMillis(), youtubePlayer.getDurationMillis()));
-            //Docs say that getDurationMillis() can change over time, so if things have changed, update SeekBarMax so we don't potentially get out of range
-            if(playerControls.getSeekBarMax() != youtubePlayer.getDurationMillis()) {
-                Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment#seekBarPositionRunnable.run. Updating SeekBarMax from %d to %d", playerControls.getSeekBarMax(), youtubePlayer.getDurationMillis()));
-                playerControls.setSeekBarMax(youtubePlayer.getDurationMillis());
+            if(youtubePlayer != null) {
+                Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment#seekBarPositionRunnable.run. Current time in millis is %d. Current length in millis is %d", youtubePlayer.getCurrentTimeMillis(), youtubePlayer.getDurationMillis()));
+                //Docs say that getDurationMillis() can change over time, so if things have changed, update SeekBarMax so we don't potentially get out of range
+                if(playerControls.getSeekBarMax() != youtubePlayer.getDurationMillis()) {
+                    Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment#seekBarPositionRunnable.run. Updating SeekBarMax from %d to %d", playerControls.getSeekBarMax(), youtubePlayer.getDurationMillis()));
+                    playerControls.setSeekBarMax(youtubePlayer.getDurationMillis());
+                }
+                playerControls.setSeekBarPosition(youtubePlayer.getCurrentTimeMillis());
+                scheduleSeekBarUpdate();
             }
-            playerControls.setSeekBarPosition(youtubePlayer.getCurrentTimeMillis());
-            scheduleSeekBarUpdate();
+
         }
     };
     private GestureDetector.OnGestureListener onGestureListener = new GestureDetector.OnGestureListener() {
@@ -233,6 +236,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         //Doing this here guarantees that if the activity is not completely torn down,
         //we can re-initialize. Otherwise you'll get stuck in onPaused state for YouTubePlayer.
         youtubePlayer.release();
+        youtubePlayer = null;
         super.onStop();
     }
 
