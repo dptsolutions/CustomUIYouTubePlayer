@@ -215,7 +215,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         if(youtubePlayer != null) {
             youtubePlayer.pause();
             lastPositionMillis = youtubePlayer.getCurrentTimeMillis();
-            Log.d(TAG, String.format("in onPause. Recording lastPositionMillis: %d", lastPositionMillis ));
+            Log.d(TAG, String.format("in onPause. Recording lastPositionMillis: %d", lastPositionMillis));
         }
 
         super.onPause();
@@ -230,7 +230,8 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         playerControls.setEnabled(false);
         //Stops window leaked error
         playerControls.dismiss();
-
+        //Doing this here guarantees that if the activity is not completely torn down,
+        //we can re-initialize. Otherwise you'll get stuck in onPaused state for YouTubePlayer.
         youtubePlayer.release();
         super.onStop();
     }
