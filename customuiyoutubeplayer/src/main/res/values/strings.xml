@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CustomUIYouTubePlayer</string>
+    <string name="error_player">An error occurred while initializing the player. Please try again.</string>
+</resources>

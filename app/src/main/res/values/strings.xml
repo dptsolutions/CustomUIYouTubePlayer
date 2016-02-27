@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">YouTube Player Custom Overlay Example</string>
-    <string name="error_player">An error occurred while initializing the player. Please try again.</string>
     <string name="button_text">Launch Player</string>
 </resources>

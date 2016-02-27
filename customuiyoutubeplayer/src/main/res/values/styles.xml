@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="YoutubePlayerControlsAnimation">
+        <item name="android:windowEnterAnimation">@anim/youtube_player_controls_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/youtube_player_controls_fade_out</item>
+    </style>
+</resources>

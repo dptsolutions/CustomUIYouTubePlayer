@@ -1,4 +1,4 @@
-package com.dptsolutions.youtubeplayercustomoverlayexample;
+package com.dptsolutions.customuiyoutubeplayer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,6 +36,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     private static final String TAG = "CustomUIYTPlayerFrag";
 
     protected String youtubeId;
+    protected String apiKey;
 
     protected PlayerControlsPopupWindow playerControls;
     protected int lastPositionMillis;
@@ -54,7 +55,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     private static final String STATE_WAS_PLAYING = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".state_was_playing";
 
     public static final String ARG_VIDEO_YOUTUBE_ID = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_video_youtube_id";
-
+    public static final String ARG_GOOGLE_API_KEY = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_google_api_key";
     private Handler seekBarPositionHandler = new Handler();
     private Runnable seekBarPositionRunnable = new Runnable() {
         @Override
@@ -113,10 +114,11 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
      *
      * @return New instance of CustomUiYouTubePlayerFragment
      */
-    public static CustomUIYouTubePlayerFragment newInstance(String youtubeId) {
+    public static CustomUIYouTubePlayerFragment newInstance(String youtubeId, String apiKey) {
         CustomUIYouTubePlayerFragment frag = new CustomUIYouTubePlayerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_VIDEO_YOUTUBE_ID, youtubeId);
+        args.putString(ARG_GOOGLE_API_KEY, apiKey);
         frag.setArguments(args);
         return frag;
     }
@@ -141,10 +143,15 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         }
 
         youtubeId = getArguments().getString(ARG_VIDEO_YOUTUBE_ID);
+        apiKey = getArguments().getString(ARG_GOOGLE_API_KEY);
         Log.d(TAG, String.format("youtubeId: %s", youtubeId));
         Log.d(TAG, String.format("lastPositionMillis: %s", lastPositionMillis));
+
         if(TextUtils.isEmpty(youtubeId)) {
             throw new IllegalArgumentException("youtubeId cannot be null/empty");
+        }
+        if(TextUtils.isEmpty(apiKey)) {
+            throw new IllegalArgumentException("apiKey cannot bey null/empty");
         }
 
         gestureDetector = new GestureDetectorCompat(getActivity(), onGestureListener);
@@ -277,7 +284,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     private void initializeYoutubePlayer() {
         Log.d(TAG, "In initializeYoutubePlayer");
-        initialize(BuildConfig.GOOGLE_API_KEY, this);
+        initialize(apiKey, this);
     }
 
     private void toggleControlsVisibility() {
@@ -449,9 +456,10 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         private boolean isEnabled;
         private int playPauseButtonState;
 
-        private static final int PAUSE_BUTTON = R.drawable.ic_pause_white_24dp;
-        private static final int PLAY_BUTTON = R.drawable.ic_play_arrow_white_24dp;
-        private static final int REPLAY_BUTTON = R.drawable.ic_replay_white_24dp;
+        //TODO these probably need to go with the layer list to allow vector drawables
+        private final int PAUSE_BUTTON = R.drawable.ic_pause_white_24dp;
+        private final int PLAY_BUTTON = R.drawable.ic_play_arrow_white_24dp;
+        private final int REPLAY_BUTTON = R.drawable.ic_replay_white_24dp;
         private static final String LESS_THAN_HUNDRED_MINUTES_FORMAT = "mm:ss";
         private static final String HUNDRED_MINUTES_FORMAT = "mmm:ss";
 
