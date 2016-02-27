@@ -457,9 +457,9 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         private int playPauseButtonState;
 
         //TODO these probably need to go with the layer list to allow vector drawables
-        private final int PAUSE_BUTTON = R.drawable.ic_pause_white_24dp;
-        private final int PLAY_BUTTON = R.drawable.ic_play_arrow_white_24dp;
-        private final int REPLAY_BUTTON = R.drawable.ic_replay_white_24dp;
+        private final int PAUSE_BUTTON = R.drawable.ic_pause_24dp;
+        private final int PLAY_BUTTON = R.drawable.ic_play_arrow_24dp;
+        private final int REPLAY_BUTTON = R.drawable.ic_replay_24dp;
         private static final String LESS_THAN_HUNDRED_MINUTES_FORMAT = "mm:ss";
         private static final String HUNDRED_MINUTES_FORMAT = "mmm:ss";
 

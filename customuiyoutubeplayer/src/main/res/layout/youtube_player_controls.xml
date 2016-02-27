@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/youtube_player_controls"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -15,7 +17,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_play_arrow_white_24dp"/>
+        app:srcCompat="@drawable/ic_play_arrow_24dp"
+        tools:ignore="MissingPrefix" />
+    <!--probably can remove MissingPrefix w/ next Support Lib Release https://code.google.com/p/android/issues/detail?id=201790 -->
 
     <SeekBar
         android:id="@+id/scrubber"
