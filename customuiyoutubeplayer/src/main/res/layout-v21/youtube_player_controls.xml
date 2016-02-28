@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/youtube_player_controls"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/youtube_player_controls_vertical_padding"
+    android:paddingRight="@dimen/youtube_player_controls_vertical_padding"
+    android:paddingBottom="@dimen/youtube_player_controls_horizontal_padding"
+    android:paddingTop="@dimen/youtube_player_controls_horizontal_padding">
+
+    <ImageButton
+        android:id="@+id/playPauseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        app:srcCompat="@drawable/ic_play_arrow_24dp"
+        tools:ignore="MissingPrefix" />
+    <!--probably can remove MissingPrefix w/ next Support Lib Release https://code.google.com/p/android/issues/detail?id=201790 -->
+
+    <SeekBar
+        android:id="@+id/scrubber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".9"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/youtube_player_controls_vertical_padding"
+        android:layout_marginRight="@dimen/youtube_player_controls_vertical_padding"/>
+
+    <TextView
+        android:id="@+id/elapsed_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:minEms="3"
+        android:text="00:00" />
+
+</LinearLayout>

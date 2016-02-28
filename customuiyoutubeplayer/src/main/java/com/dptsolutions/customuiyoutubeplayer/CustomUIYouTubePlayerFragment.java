@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.widget.AppCompatSeekBar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -493,7 +492,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
      */
     private class PlayerControlsPopupWindow extends PopupWindow implements SeekBar.OnSeekBarChangeListener {
 
-        private AppCompatSeekBar seekBar;
+        private SeekBar seekBar;
         private ImageButton playPauseButton;
         private TextView elapsedTime;
         private boolean isEnabled;
@@ -521,7 +520,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
             setTouchable(true);
 
             elapsedTime = (TextView) getContentView().findViewById(R.id.elapsed_time);
-            seekBar = (AppCompatSeekBar) getContentView().findViewById(R.id.scrubber);
+            seekBar = (SeekBar) getContentView().findViewById(R.id.scrubber);
             seekBar.setOnSeekBarChangeListener(this);
             playPauseButton = (ImageButton) getContentView().findViewById(R.id.playPauseButton);
             playPauseButton.setOnClickListener(new View.OnClickListener() {
