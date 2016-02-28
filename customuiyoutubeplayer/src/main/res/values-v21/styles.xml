@@ -7,32 +7,16 @@
         <item name="android:seekBarStyle">@style/YouTubePlayerControlsSeekBarStyle</item>
     </style>
 
-    <!-- Style for overall controls window -->
-    <style name="YouTubePlayerControlsWindowStyle" parent="Widget.AppCompat.PopupWindow">
-        <item name="android:popupBackground">@drawable/youtube_player_controls_background</item>
-        <item name="android:popupAnimationStyle">@style/YouTubePlayerControlsAnimation</item>
-    </style>
-
-    <!-- Style for play/pause/replay button -->
+    <!-- Style for play/pause/replay button on Lollipop and newer -->
     <style name="YouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
         <item name="android:backgroundTint">@android:color/white</item>
-        <item name="android:tint">#c51109</item>
+        <item name="android:tint">@color/youtube_red</item>
     </style>
 
-    <!-- Style for timestamp text -->
-    <style name="YouTubePlayerControlsTextStyle" parent="android:Widget.TextView">
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-
-    <!-- Style for scrubber -->
+    <!-- Style for scrubber on Lollipop and newer -->
     <style name="YouTubePlayerControlsSeekBarStyle" parent="Widget.AppCompat.SeekBar">
         <!-- Following 2 properties set the tint on SeekBar for Lollipop and newer devices -->
-        <item name="android:thumbTint">#e62117</item>
-        <item name="android:progressTint">#e62117</item>
-    </style>
-
-    <style name="YouTubePlayerControlsAnimation">
-        <item name="android:windowEnterAnimation">@anim/youtube_player_controls_fade_in</item>
-        <item name="android:windowExitAnimation">@anim/youtube_player_controls_fade_out</item>
+        <item name="android:thumbTint">@android:color/white</item>
+        <item name="android:progressTint">@android:color/white</item>
     </style>
 </resources>

@@ -6,19 +6,19 @@
         <item name="android:textViewStyle">@style/YouTubePlayerControlsTextStyle</item>
         <item name="android:seekBarStyle">@style/YouTubePlayerControlsSeekBarStyle</item>
         <!-- Sets the tint on SeekBar for pre-Lollipop devices -->
-        <item name="colorAccent">#e62117</item>
+        <item name="colorAccent">@android:color/white</item>
     </style>
 
     <!-- Style for overall controls window -->
     <style name="YouTubePlayerControlsWindowStyle" parent="Widget.AppCompat.PopupWindow">
-        <item name="android:popupBackground">@drawable/youtube_player_controls_background</item>
+        <item name="android:popupBackground">@color/youtube_red</item>
         <item name="android:popupAnimationStyle">@style/YouTubePlayerControlsAnimation</item>
     </style>
 
-    <!-- Style for play/pause/replay button -->
+    <!-- Style for play/pause/replay button pre-Lollipop -->
     <style name="YouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
         <item name="backgroundTint">@android:color/white</item>
-        <item name="android:tint">#c51109</item>
+        <item name="android:tint">@color/youtube_red</item>
     </style>
 
     <!-- Style for timestamp text -->
@@ -26,7 +26,7 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <!-- Style for scrubber -->
+    <!-- Style for scrubber if you want to do more than tint pre-Lollipop -->
     <style name="YouTubePlayerControlsSeekBarStyle" parent="Widget.AppCompat.SeekBar">
     </style>
 
