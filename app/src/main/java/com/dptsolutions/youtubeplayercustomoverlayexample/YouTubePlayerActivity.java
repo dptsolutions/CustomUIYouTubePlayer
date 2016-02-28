@@ -26,7 +26,7 @@ public class YouTubePlayerActivity extends Activity  {
         if(playerFrag == null) {
             playerFrag = CustomUIYouTubePlayerFragment.newInstance(
                     getIntent().getStringExtra(EXTRA_VIDEO_YOUTUBE_ID),
-                    BuildConfig.GOOGLE_API_KEY);
+                    BuildConfig.GOOGLE_API_KEY, null);
             mgr.beginTransaction()
                     .add(R.id.fragment_container, playerFrag, PLAYER_FRAG_TAG)
                     .commit();

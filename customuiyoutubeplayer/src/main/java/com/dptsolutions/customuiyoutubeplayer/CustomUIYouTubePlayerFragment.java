@@ -1,14 +1,19 @@
 package com.dptsolutions.customuiyoutubeplayer;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.StyleRes;
 import android.support.v4.view.GestureDetectorCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,6 +49,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     private YouTubePlayer youtubePlayer;
     private GestureDetectorCompat gestureDetector;
+    private ContextThemeWrapper wrappedContext;
 
     private static final int RECOVERY_DIALOG_REQUEST = 1;
     private static final int HIDE_STATUS_BAR_FLAGS_IMMERSIVE = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
@@ -56,6 +62,8 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     public static final String ARG_VIDEO_YOUTUBE_ID = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_video_youtube_id";
     public static final String ARG_GOOGLE_API_KEY = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_google_api_key";
+    public static final String ARG_THEME_RESOURCE_ID = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_theme_id";
+
     private Handler seekBarPositionHandler = new Handler();
     private Runnable seekBarPositionRunnable = new Runnable() {
         @Override
@@ -111,19 +119,36 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
      * Create a new instance of CustomUiYouTubePlayerFragment
      *
      * @param youtubeId ID of YouTube video to play
-     *
+     * @param apiKey Google API Key
+     * @param themeResourceId Theme Resource ID to use (null if using Activity's theme)
      * @return New instance of CustomUiYouTubePlayerFragment
      */
-    public static CustomUIYouTubePlayerFragment newInstance(String youtubeId, String apiKey) {
+    public static CustomUIYouTubePlayerFragment newInstance(@NonNull String youtubeId, @NonNull String apiKey, @Nullable @StyleRes Integer themeResourceId) {
         CustomUIYouTubePlayerFragment frag = new CustomUIYouTubePlayerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_VIDEO_YOUTUBE_ID, youtubeId);
         args.putString(ARG_GOOGLE_API_KEY, apiKey);
+        if(themeResourceId != null) {
+            args.putInt(ARG_THEME_RESOURCE_ID, themeResourceId);
+        }
         frag.setArguments(args);
         return frag;
     }
 
     public CustomUIYouTubePlayerFragment() {
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        wrapContext(activity);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        wrapContext(context);
     }
 
     @Override
@@ -144,6 +169,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
         youtubeId = getArguments().getString(ARG_VIDEO_YOUTUBE_ID);
         apiKey = getArguments().getString(ARG_GOOGLE_API_KEY);
+
         Log.d(TAG, String.format("youtubeId: %s", youtubeId));
         Log.d(TAG, String.format("lastPositionMillis: %s", lastPositionMillis));
 
@@ -155,7 +181,8 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         }
 
         gestureDetector = new GestureDetectorCompat(getActivity(), onGestureListener);
-        playerControls = new PlayerControlsPopupWindow(getActivity());
+
+        playerControls = new PlayerControlsPopupWindow(wrappedContext);
         playerControls.setEnabled(false);
 
     }
@@ -163,8 +190,11 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "In onCreateView. Wrap the YouTubePlayerView");
-        YouTubePlayerViewWrapper wrapper = new YouTubePlayerViewWrapper(getActivity());
-        wrapper.addView(super.onCreateView(inflater, container, savedInstanceState));
+        // clone the inflater using the context wrapped with the desired theme
+        final LayoutInflater localInflater = inflater.cloneInContext(wrappedContext);
+
+        YouTubePlayerViewWrapper wrapper = new YouTubePlayerViewWrapper(wrappedContext);
+        wrapper.addView(super.onCreateView(localInflater, container, savedInstanceState));
 
         return wrapper;
     }
@@ -261,6 +291,12 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     }
 
     @Override
+    public void onDetach() {
+        wrappedContext = null;
+        super.onDetach();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RECOVERY_DIALOG_REQUEST) {
             // Retry initialization if user performed a recovery action
@@ -297,6 +333,12 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
                 playerControls.showAtLocation(getView(), Gravity.BOTTOM, 0, 0);
             }
         }
+    }
+
+    private void wrapContext(Context contextToWrap) {
+        final int themeResourceId = getArguments().getInt(ARG_THEME_RESOURCE_ID, 0);
+        wrappedContext = new ContextThemeWrapper(contextToWrap, themeResourceId != 0 ? themeResourceId
+                                                                                     :  R.style.YouTubePlayerTheme);
     }
 
     private void scheduleSeekBarUpdate() {
@@ -470,13 +512,12 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         }
 
         public PlayerControlsPopupWindow(Context context) {
-            super(View.inflate(context, R.layout.youtube_player_controls, null),
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            super(context);
+            setContentView(View.inflate(context, R.layout.youtube_player_controls, null));
+            setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
             setFocusable(false);
             setTouchable(true);
-            setAnimationStyle(R.style.YoutubePlayerControlsAnimation);
-
 
             seekBar = (SeekBar) getContentView().findViewById(R.id.scrubber);
             seekBar.setOnSeekBarChangeListener(this);
