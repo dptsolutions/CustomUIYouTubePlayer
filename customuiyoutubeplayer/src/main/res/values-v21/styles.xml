@@ -16,6 +16,7 @@
     <!-- Style for play/pause/replay button -->
     <style name="YouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
         <item name="android:backgroundTint">@android:color/white</item>
+        <item name="android:tint">#c51109</item>
     </style>
 
     <!-- Style for timestamp text -->
