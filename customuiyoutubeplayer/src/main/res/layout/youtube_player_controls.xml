@@ -20,7 +20,7 @@
         tools:ignore="MissingPrefix" />
     <!--probably can remove MissingPrefix w/ next Support Lib Release https://code.google.com/p/android/issues/detail?id=201790 -->
 
-    <SeekBar
+    <android.support.v7.widget.AppCompatSeekBar
         android:id="@+id/scrubber"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -5,6 +5,8 @@
         <item name="android:imageButtonStyle">@style/YouTubePlayerControlsButtonStyle</item>
         <item name="android:textViewStyle">@style/YouTubePlayerControlsTextStyle</item>
         <item name="android:seekBarStyle">@style/YouTubePlayerControlsSeekBarStyle</item>
+        <!--Sets the tint on the AppCompatSeekBar-->
+        <item name="colorAccent">#e62117</item>
     </style>
 
     <!-- Style for overall controls window -->
@@ -15,7 +17,8 @@
 
     <!-- Style for play/pause/replay button -->
     <style name="YouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
-        <item name="android:background">@android:color/white</item>
+        <item name="backgroundTint">@android:color/white</item>
+        <item name="android:backgroundTint">@android:color/white</item>
     </style>
 
     <!-- Style for timestamp text -->
@@ -25,7 +28,6 @@
 
     <!-- Style for scrubber -->
     <style name="YouTubePlayerControlsSeekBarStyle" parent="Widget.AppCompat.SeekBar">
-        <item name="android:tint">@android:color/holo_red_light</item>
     </style>
 
     <style name="YouTubePlayerControlsAnimation">
