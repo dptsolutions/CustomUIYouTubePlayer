@@ -23,6 +23,8 @@
         <item name="android:background">@drawable/btn_background</item>
         <item name="backgroundTint">@color/youtube_red</item><!-- doesnt work in 23.2!!!-->
         <item name="android:tint">@android:color/white</item>
+        <!-- Uncomment line below and specify a level list to override default button icons -->
+        <!--<item name="android:src">@drawable/ic_play_pause_replay_default</item>-->
     </style>
 
     <!-- Style for timestamp text -->

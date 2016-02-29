@@ -504,7 +504,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         private static final String LESS_THAN_HUNDRED_MINUTES_FORMAT = "mm:ss";
         private static final String HUNDRED_MINUTES_FORMAT = "mmm:ss";
 
-        private final class PlayPauseButtonState {
+        public final class PlayPauseButtonState {
             public static final int PLAY = 1;
             public static final int PAUSE = 0;
             public static final int REPLAY = 2;
@@ -523,6 +523,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
             seekBar.setOnSeekBarChangeListener(this);
             playPauseButton = (ImageButton) getContentView().findViewById(R.id.playPauseButton);
             if(playPauseButton.getDrawable() == null) {
+                //No src set on the style. So load the default
                 playPauseButton.setImageResource(R.drawable.ic_play_pause_replay_default);
             }
             playPauseButton.setOnClickListener(new View.OnClickListener() {

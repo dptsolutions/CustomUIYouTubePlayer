@@ -11,6 +11,8 @@
     <style name="AppThemeYouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
         <item name="android:backgroundTint">@color/youtube_red</item>
         <item name="android:tint">@android:color/white</item>
+        <!-- Uncomment line below and specify a level list to override default button icons -->
+        <!--<item name="android:src">@drawable/ic_play_pause_replay_default</item>-->
     </style>
 
     <!-- Style for scrubber on Lollipop and newer -->
