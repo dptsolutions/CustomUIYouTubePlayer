@@ -34,7 +34,7 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 /**
- * Fragment for playing YouTube videos in Fullscreen landscape
+ * Fragment for playing YouTube videos with a custom UI
  */
 public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment implements YouTubePlayer.OnInitializedListener, YouTubePlayer.PlayerStateChangeListener, YouTubePlayer.PlaybackEventListener {
 
