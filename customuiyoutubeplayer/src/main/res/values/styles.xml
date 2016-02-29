@@ -19,7 +19,9 @@
 
     <!-- Style for play/pause/replay button pre-Lollipop -->
     <style name="YouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
-        <item name="backgroundTint">@android:color/black</item><!-- doesnt work!!!-->
+        <!-- backgroundTint doesnt work in 23.2! But we luck out b/c the background drawable in
+             Widget.AppCompat.ImageButton is white -->
+        <item name="backgroundTint">@android:color/white</item>
         <item name="android:tint">@color/youtube_red</item>
     </style>
 
