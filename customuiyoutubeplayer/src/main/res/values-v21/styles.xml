@@ -15,8 +15,9 @@
 
     <!-- Style for scrubber on Lollipop and newer -->
     <style name="YouTubePlayerControlsSeekBarStyle" parent="Widget.AppCompat.SeekBar">
-        <!-- Following 2 properties set the tint on SeekBar for Lollipop and newer devices -->
+        <!-- Following 3 properties set the tint on SeekBar for Lollipop and newer devices -->
         <item name="android:thumbTint">@android:color/white</item>
         <item name="android:progressTint">@android:color/white</item>
+        <item name="android:progressBackgroundTint">@android:color/white</item>
     </style>
 </resources>

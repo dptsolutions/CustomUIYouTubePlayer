@@ -15,8 +15,19 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void launchPlayer(View view) {
-        Intent launchPlayerIntent = new Intent(this, YouTubePlayerActivity.class);
+        doLaunchPlayer(false);
+    }
+
+    public void launchStyledPlayer(View view) {
+       doLaunchPlayer(true);
+    }
+
+    private void doLaunchPlayer(boolean useCustomTheme) {
+        final Intent launchPlayerIntent = new Intent(this, YouTubePlayerActivity.class);
         launchPlayerIntent.putExtra(YouTubePlayerActivity.EXTRA_VIDEO_YOUTUBE_ID, "66f4-NKEYz4");
+        if(useCustomTheme) {
+            launchPlayerIntent.putExtra(YouTubePlayerActivity.EXTRA_USE_CUSTOM_THEME, true);
+        }
         startActivity(launchPlayerIntent);
     }
 }

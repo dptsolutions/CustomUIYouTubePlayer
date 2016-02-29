@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">YouTube Player Custom Overlay Example</string>
-    <string name="button_text">Launch Player</string>
+    <string name="unstyled_player_button_text">Launch Player</string>
+    <string name="styled_player_button_text">Launch Styled Player</string>
 </resources>

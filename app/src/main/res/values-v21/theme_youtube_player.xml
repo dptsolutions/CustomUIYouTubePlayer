@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.YouTubePlayer" parent="Theme.AppCompat">
+        <item name="android:popupWindowStyle">@style/AppThemeYouTubePlayerControlsWindowStyle</item>
+        <item name="android:imageButtonStyle">@style/AppThemeYouTubePlayerControlsButtonStyle</item>
+        <item name="android:textViewStyle">@style/AppThemeYouTubePlayerControlsTextStyle</item>
+        <item name="android:seekBarStyle">@style/AppThemeYouTubePlayerControlsSeekBarStyle</item>
+    </style>
+
+    <!-- Style for play/pause/replay button on Lollipop and newer -->
+    <style name="AppThemeYouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
+        <item name="android:backgroundTint">@color/youtube_red</item>
+        <item name="android:tint">@android:color/white</item>
+    </style>
+
+    <!-- Style for scrubber on Lollipop and newer -->
+    <style name="AppThemeYouTubePlayerControlsSeekBarStyle" parent="Widget.AppCompat.SeekBar">
+        <!-- Following 3 properties set the tint on SeekBar for Lollipop and newer devices -->
+        <item name="android:thumbTint">@color/youtube_red</item>
+        <item name="android:progressTint">@color/youtube_red</item>
+        <item name="android:progressBackgroundTint">@android:color/black</item>
+    </style>
+</resources>
