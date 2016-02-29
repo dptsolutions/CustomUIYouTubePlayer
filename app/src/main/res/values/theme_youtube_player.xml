@@ -19,7 +19,7 @@
 
     <!-- Style for play/pause/replay button pre-Lollipop -->
     <style name="AppThemeYouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
-        <item name="backgroundTint">@color/youtube_red</item>
+        <item name="backgroundTint">@color/youtube_red</item><!-- doesnt work!!!-->
         <item name="android:tint">@android:color/white</item>
     </style>
 
