@@ -504,7 +504,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         private static final String LESS_THAN_HUNDRED_MINUTES_FORMAT = "mm:ss";
         private static final String HUNDRED_MINUTES_FORMAT = "mmm:ss";
 
-        public final class PlayPauseButtonState {
+        private final class PlayPauseButtonState {
             public static final int PLAY = 1;
             public static final int PAUSE = 0;
             public static final int REPLAY = 2;
