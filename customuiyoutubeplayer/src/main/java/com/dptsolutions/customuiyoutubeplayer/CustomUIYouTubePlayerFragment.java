@@ -498,10 +498,9 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         private boolean isEnabled;
         private int playPauseButtonState;
 
-        //TODO these probably need to go with the layer list to allow vector drawables
-        private final int PAUSE_BUTTON = R.drawable.ic_pause_24dp;
-        private final int PLAY_BUTTON = R.drawable.ic_play_arrow_24dp;
-        private final int REPLAY_BUTTON = R.drawable.ic_replay_24dp;
+        private static final int PAUSE_BUTTON_LEVEL = 1;
+        private static final int PLAY_BUTTON_LEVEL = 0;
+        private static final int REPLAY_BUTTON_LEVEL = 2;
         private static final String LESS_THAN_HUNDRED_MINUTES_FORMAT = "mm:ss";
         private static final String HUNDRED_MINUTES_FORMAT = "mmm:ss";
 
@@ -523,16 +522,19 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
             seekBar = (SeekBar) getContentView().findViewById(R.id.scrubber);
             seekBar.setOnSeekBarChangeListener(this);
             playPauseButton = (ImageButton) getContentView().findViewById(R.id.playPauseButton);
+            if(playPauseButton.getDrawable() == null) {
+                playPauseButton.setImageResource(R.drawable.ic_play_pause_replay_default);
+            }
             playPauseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(youtubePlayer.isPlaying()) {
-                        playPauseButton.setImageResource(PLAY_BUTTON);
+                        setPlayPauseButtonState(PlayPauseButtonState.PLAY);
                         if (youtubePlayer != null) {
                             youtubePlayer.pause();
                         }
                     } else {
-                        playPauseButton.setImageResource(PAUSE_BUTTON);
+                        setPlayPauseButtonState(PlayPauseButtonState.PAUSE);
                         if (youtubePlayer != null) {
                             youtubePlayer.play();
                         }
@@ -566,13 +568,13 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         public void setPlayPauseButtonState(int state) {
             switch (state) {
                 case PlayPauseButtonState.PLAY:
-                    playPauseButton.setImageResource(PLAY_BUTTON);
+                    playPauseButton.setImageLevel(PLAY_BUTTON_LEVEL);
                     break;
                 case PlayPauseButtonState.PAUSE:
-                    playPauseButton.setImageResource(PAUSE_BUTTON);
+                    playPauseButton.setImageLevel(PAUSE_BUTTON_LEVEL);
                     break;
                 case PlayPauseButtonState.REPLAY:
-                    playPauseButton.setImageResource(REPLAY_BUTTON);
+                    playPauseButton.setImageLevel(REPLAY_BUTTON_LEVEL);
                     break;
                 default:
                     Log.w(TAG, String.format("Value passed into setPlayPauseButtonState was not a valid state constant. Value passed in: %d", state));
