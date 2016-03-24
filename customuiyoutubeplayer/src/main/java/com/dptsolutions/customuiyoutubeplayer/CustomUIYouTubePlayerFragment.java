@@ -285,7 +285,9 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         playerControls.dismiss();
         //Doing this here guarantees that if the activity is not completely torn down,
         //we can re-initialize. Otherwise you'll get stuck in onPaused state for YouTubePlayer.
-        youtubePlayer.release();
+        if(youtubePlayer != null) {
+            youtubePlayer.release();
+        }
         youtubePlayer = null;
         super.onStop();
     }

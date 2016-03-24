@@ -2,7 +2,7 @@
 <resources>
     <style name="YouTubePlayerTheme" parent="Theme.AppCompat">
         <item name="android:popupWindowStyle">@style/YouTubePlayerControlsWindowStyle</item>
-        <item name="android:imageButtonStyle">@style/YouTubePlayerControlsButtonStyle</item>
+        <item name="imageButtonStyle">@style/YouTubePlayerControlsButtonStyle</item>
         <item name="android:textViewStyle">@style/YouTubePlayerControlsTextStyle</item>
         <item name="android:seekBarStyle">@style/YouTubePlayerControlsSeekBarStyle</item>
         <!-- Sets the tint for thumb on SeekBar for pre-Lollipop devices -->
@@ -17,10 +17,10 @@
         <item name="android:popupAnimationStyle">@style/YouTubePlayerControlsAnimation</item>
     </style>
 
-    <!-- Style for play/pause/replay button pre-Lollipop -->
+    <!-- Style for play/pause/replay button -->
     <style name="YouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
-        <!-- backgroundTint doesnt work in 23.2! But we luck out b/c the background drawable in
-             Widget.AppCompat.ImageButton is white -->
+        <!-- Must specify both platform and AppCompat attrs. -->
+        <item name="android:backgroundTint">@android:color/white</item>
         <item name="backgroundTint">@android:color/white</item>
         <item name="android:tint">@color/youtube_red</item>
     </style>

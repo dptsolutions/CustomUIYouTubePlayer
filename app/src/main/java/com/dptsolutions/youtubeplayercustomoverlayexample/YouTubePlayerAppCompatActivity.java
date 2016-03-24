@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.dptsolutions.customuiyoutubeplayer.CustomUIYouTubePlayerFragment;
 
 /**
- * Activity for playing YouTube videos in Fullscreen landscape
+ * Activity for playing YouTube videos in Fullscreen landscape pre-Lollipop
  */
-public class YouTubePlayerActivity extends Activity  {
+public class YouTubePlayerAppCompatActivity extends AppCompatActivity {
 
     private static final String PLAYER_FRAG_TAG = "player_fragment";
     @Override

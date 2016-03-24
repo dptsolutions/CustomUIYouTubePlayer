@@ -1,6 +1,7 @@
 package com.dptsolutions.youtubeplayercustomoverlayexample;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
@@ -23,10 +24,13 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void doLaunchPlayer(boolean useCustomTheme) {
-        final Intent launchPlayerIntent = new Intent(this, YouTubePlayerActivity.class);
-        launchPlayerIntent.putExtra(YouTubePlayerActivity.EXTRA_VIDEO_YOUTUBE_ID, "66f4-NKEYz4");
+        Class activityClass = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                ? YouTubePlayerActivity.class
+                : YouTubePlayerAppCompatActivity.class;
+        final Intent launchPlayerIntent = new Intent(this, activityClass);
+        launchPlayerIntent.putExtra(Constants.EXTRA_VIDEO_YOUTUBE_ID, "66f4-NKEYz4");
         if(useCustomTheme) {
-            launchPlayerIntent.putExtra(YouTubePlayerActivity.EXTRA_USE_CUSTOM_THEME, true);
+            launchPlayerIntent.putExtra(Constants.EXTRA_USE_CUSTOM_THEME, true);
         }
         startActivity(launchPlayerIntent);
     }

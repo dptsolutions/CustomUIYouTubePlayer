@@ -2,7 +2,7 @@
 <resources>
     <style name="AppTheme.YouTubePlayer" parent="Theme.AppCompat">
         <item name="android:popupWindowStyle">@style/AppThemeYouTubePlayerControlsWindowStyle</item>
-        <item name="android:imageButtonStyle">@style/AppThemeYouTubePlayerControlsButtonStyle</item>
+        <item name="imageButtonStyle">@style/AppThemeYouTubePlayerControlsButtonStyle</item>
         <item name="android:textViewStyle">@style/AppThemeYouTubePlayerControlsTextStyle</item>
         <item name="android:seekBarStyle">@style/AppThemeYouTubePlayerControlsSeekBarStyle</item>
         <!-- Sets the tint for thumb on SeekBar for pre-Lollipop devices -->
@@ -20,7 +20,7 @@
     <!-- Style for play/pause/replay button pre-Lollipop -->
     <style name="AppThemeYouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
         <!-- Have to set background manually, b/c tinting seems broken in AppCompat as of 23.2 for ImageButton -->
-        <item name="android:background">@drawable/btn_background</item>
+        <!--<item name="android:background">@drawable/btn_background</item>-->
         <item name="backgroundTint">@color/youtube_red</item><!-- doesnt work in 23.2!!!-->
         <item name="android:tint">@android:color/white</item>
         <!-- Uncomment line below and specify a level list to override default button icons -->
