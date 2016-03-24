@@ -8,7 +8,8 @@ import android.os.Bundle;
 import com.dptsolutions.customuiyoutubeplayer.CustomUIYouTubePlayerFragment;
 
 /**
- * Activity for playing YouTube videos in Fullscreen landscape
+ * Activity demonstrating playing YouTube videos with the fragment
+ * using the platform activity.
  */
 public class YouTubePlayerActivity extends Activity  {
 
@@ -26,7 +27,7 @@ public class YouTubePlayerActivity extends Activity  {
             final Integer styleResId = getIntent().getBooleanExtra(Constants.EXTRA_USE_CUSTOM_THEME, false) ? R.style.AppTheme_YouTubePlayer : null;
             playerFrag = CustomUIYouTubePlayerFragment.newInstance(
                     getIntent().getStringExtra(Constants.EXTRA_VIDEO_YOUTUBE_ID),
-                    BuildConfig.GOOGLE_API_KEY, styleResId);
+                    BuildConfig.GOOGLE_API_KEY, styleResId, true);
             mgr.beginTransaction()
                     .add(R.id.fragment_container, playerFrag, PLAYER_FRAG_TAG)
                     .commit();

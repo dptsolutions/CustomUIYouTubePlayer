@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import com.dptsolutions.customuiyoutubeplayer.CustomUIYouTubePlayerFragment;
 
 /**
- * Activity for playing YouTube videos in Fullscreen landscape pre-Lollipop
+ * Activity demonstrating playing YouTube videos with the fragment
+ * using the AppCompat activity for widget tinting and vector drawables
+ * pre-Lollipop.
  */
 public class YouTubePlayerAppCompatActivity extends AppCompatActivity {
 
@@ -27,7 +29,7 @@ public class YouTubePlayerAppCompatActivity extends AppCompatActivity {
             final Integer styleResId = getIntent().getBooleanExtra(Constants.EXTRA_USE_CUSTOM_THEME, false) ? R.style.AppTheme_YouTubePlayer : null;
             playerFrag = CustomUIYouTubePlayerFragment.newInstance(
                     getIntent().getStringExtra(Constants.EXTRA_VIDEO_YOUTUBE_ID),
-                    BuildConfig.GOOGLE_API_KEY, styleResId);
+                    BuildConfig.GOOGLE_API_KEY, styleResId, true);
             mgr.beginTransaction()
                     .add(R.id.fragment_container, playerFrag, PLAYER_FRAG_TAG)
                     .commit();

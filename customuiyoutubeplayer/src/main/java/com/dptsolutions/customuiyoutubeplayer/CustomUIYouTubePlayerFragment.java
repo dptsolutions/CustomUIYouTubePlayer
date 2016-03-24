@@ -42,6 +42,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     protected String youtubeId;
     protected String apiKey;
+    protected boolean enableLogging;
 
     protected PlayerControlsPopupWindow playerControls;
     protected int lastPositionMillis;
@@ -50,6 +51,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     private YouTubePlayer youtubePlayer;
     private GestureDetectorCompat gestureDetector;
     private ContextThemeWrapper wrappedContext;
+    private final LogWrapper logWrapper = new LogWrapper();
 
     private static final int RECOVERY_DIALOG_REQUEST = 1;
     private static final int HIDE_STATUS_BAR_FLAGS_IMMERSIVE = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
@@ -60,19 +62,20 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     private static final String STATE_LAST_POSITION_MILLIS = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".state_last_millis";
     private static final String STATE_WAS_PLAYING = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".state_was_playing";
 
-    public static final String ARG_VIDEO_YOUTUBE_ID = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_video_youtube_id";
-    public static final String ARG_GOOGLE_API_KEY = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_google_api_key";
-    public static final String ARG_THEME_RESOURCE_ID = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_theme_id";
+    private static final String ARG_VIDEO_YOUTUBE_ID = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_video_youtube_id";
+    private static final String ARG_GOOGLE_API_KEY = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_google_api_key";
+    private static final String ARG_THEME_RESOURCE_ID = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_theme_id";
+    private static final String ARG_ENABLE_LOGGING = CustomUIYouTubePlayerFragment.class.getPackage().getName() + ".arg_enable_logging";
 
     private Handler seekBarPositionHandler = new Handler();
     private Runnable seekBarPositionRunnable = new Runnable() {
         @Override
         public void run() {
             if(youtubePlayer != null) {
-                Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment#seekBarPositionRunnable.run. Current time in millis is %d. Current length in millis is %d", youtubePlayer.getCurrentTimeMillis(), youtubePlayer.getDurationMillis()));
+                logWrapper.d(TAG, "In CustomUIYouTubePlayerFragment#seekBarPositionRunnable.run. Current time in millis is %d. Current length in millis is %d", youtubePlayer.getCurrentTimeMillis(), youtubePlayer.getDurationMillis());
                 //Docs say that getDurationMillis() can change over time, so if things have changed, update SeekBarMax so we don't potentially get out of range
                 if(playerControls.getSeekBarMax() != youtubePlayer.getDurationMillis()) {
-                    Log.d(TAG, String.format("In CustomUIYouTubePlayerFragment#seekBarPositionRunnable.run. Updating SeekBarMax from %d to %d", playerControls.getSeekBarMax(), youtubePlayer.getDurationMillis()));
+                    logWrapper.d(TAG, "In CustomUIYouTubePlayerFragment#seekBarPositionRunnable.run. Updating SeekBarMax from %d to %d", playerControls.getSeekBarMax(), youtubePlayer.getDurationMillis());
                     playerControls.setSeekBarMax(youtubePlayer.getDurationMillis());
                 }
                 playerControls.setSeekBarPosition(youtubePlayer.getCurrentTimeMillis());
@@ -121,18 +124,37 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
      * @param youtubeId ID of YouTube video to play
      * @param apiKey Google API Key
      * @param themeResourceId Theme Resource ID to use (null if using Activity's theme)
+     * @param enableDebugLogging True, to enable logging fragment events to LogCat even if not a
+     *                           debug build
      * @return New instance of CustomUiYouTubePlayerFragment
      */
-    public static CustomUIYouTubePlayerFragment newInstance(@NonNull String youtubeId, @NonNull String apiKey, @Nullable @StyleRes Integer themeResourceId) {
+    public static CustomUIYouTubePlayerFragment newInstance(@NonNull String youtubeId,
+                                                            @NonNull String apiKey,
+                                                            @Nullable @StyleRes Integer themeResourceId,
+                                                            boolean enableDebugLogging) {
         CustomUIYouTubePlayerFragment frag = new CustomUIYouTubePlayerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_VIDEO_YOUTUBE_ID, youtubeId);
         args.putString(ARG_GOOGLE_API_KEY, apiKey);
+        args.putBoolean(ARG_ENABLE_LOGGING, enableDebugLogging);
         if(themeResourceId != null) {
             args.putInt(ARG_THEME_RESOURCE_ID, themeResourceId);
         }
         frag.setArguments(args);
         return frag;
+    }
+
+    /**
+     * Create a new instance of CustomUiYouTubePlayerFragment
+     *
+     * @param youtubeId ID of YouTube video to play
+     * @param apiKey Google API Key
+     * @param themeResourceId Theme Resource ID to use (null if using Activity's theme)
+     */
+    public static CustomUIYouTubePlayerFragment newInstance(@NonNull String youtubeId,
+                                                            @NonNull String apiKey,
+                                                            @Nullable @StyleRes Integer themeResourceId) {
+        return newInstance(youtubeId, apiKey, themeResourceId, false);
     }
 
     public CustomUIYouTubePlayerFragment() {
@@ -154,7 +176,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "In onCreate. Initialize controls");
+        logWrapper.d(TAG, "In onCreate. Initialize controls");
 
         if(savedInstanceState == null) {
             //Init new instance
@@ -169,9 +191,10 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
         youtubeId = getArguments().getString(ARG_VIDEO_YOUTUBE_ID);
         apiKey = getArguments().getString(ARG_GOOGLE_API_KEY);
+        enableLogging = getArguments().getBoolean(ARG_ENABLE_LOGGING);
 
-        Log.d(TAG, String.format("youtubeId: %s", youtubeId));
-        Log.d(TAG, String.format("lastPositionMillis: %s", lastPositionMillis));
+        logWrapper.d(TAG, "youtubeId: %s", youtubeId);
+        logWrapper.d(TAG, "lastPositionMillis: %s", lastPositionMillis);
 
         if(TextUtils.isEmpty(youtubeId)) {
             throw new IllegalArgumentException("youtubeId cannot be null/empty");
@@ -189,7 +212,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG, "In onCreateView. Wrap the YouTubePlayerView");
+        logWrapper.d(TAG, "In onCreateView. Wrap the YouTubePlayerView");
         // clone the inflater using the context wrapped with the desired theme
         final LayoutInflater localInflater = inflater.cloneInContext(wrappedContext);
 
@@ -202,7 +225,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "In onStart. Ensure playerControls are dismissed, init YouTubePlayer");
+        logWrapper.d(TAG, "In onStart. Ensure playerControls are dismissed, init YouTubePlayer");
 
         //Want to make sure we start in the state where things will be shown when we hit onResume
         if(playerControls.isShowing()) {
@@ -215,7 +238,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "In onResume. Post runnable to root view, that will initially show the player controls & choose SystemUI mode");
+        logWrapper.d(TAG, "In onResume. Post runnable to root view, that will initially show the player controls & choose SystemUI mode");
         //We have to wait till everything is running before we show the PopupWindow, otherwise you get an exception.
         //This runnable will run once the View is attached to the window
         if ( isYoutubePlayerViewReady() ) {
@@ -254,7 +277,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
                             });
                             systemUiMode = "FAKED IMMERSIVE";
                         }
-                        Log.d(TAG, String.format("SystemUIMode: %s", systemUiMode));
+                        logWrapper.d(TAG, "SystemUIMode: %s", systemUiMode);
                         toggleControlsVisibility();
                     }
                 }
@@ -268,7 +291,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
             wasPlaying = youtubePlayer.isPlaying();
             youtubePlayer.pause();
             lastPositionMillis = youtubePlayer.getCurrentTimeMillis();
-            Log.d(TAG, String.format("in onPause. Recording lastPositionMillis: %d", lastPositionMillis));
+            logWrapper.d(TAG, "in onPause. Recording lastPositionMillis: %d", lastPositionMillis);
         }
 
         super.onPause();
@@ -276,7 +299,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onStop() {
-        Log.d(TAG, "In onStop. Hide controls, reset button state, release player");
+        logWrapper.d(TAG, "In onStop. Hide controls, reset button state, release player");
 
         //If activity is restarted, player will be paused. So reset the button state on our way out
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.PLAY);
@@ -308,7 +331,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
-        Log.d(TAG, String.format("in onSaveInstanceState. lastPositionMillis: %d", lastPositionMillis));
+        logWrapper.d(TAG, "in onSaveInstanceState. lastPositionMillis: %d", lastPositionMillis);
         bundle.putInt(STATE_LAST_POSITION_MILLIS, lastPositionMillis);
         bundle.putBoolean(STATE_WAS_PLAYING, wasPlaying);
         super.onSaveInstanceState(bundle);
@@ -316,21 +339,21 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     private boolean isYoutubePlayerViewReady() {
         boolean isReady = getView() != null;
-        Log.d(TAG, String.format("isYoutubePlayerViewReady: %s", isReady));
+        logWrapper.d(TAG, "isYoutubePlayerViewReady: %s", isReady);
         return isReady;
     }
 
     private void initializeYoutubePlayer() {
-        Log.d(TAG, "In initializeYoutubePlayer");
+        logWrapper.d(TAG, "In initializeYoutubePlayer");
         initialize(apiKey, this);
     }
 
     private void toggleControlsVisibility() {
         if(playerControls.isShowing()) {
-            Log.d(TAG, "In toggleControlsVisibility. Hiding player controls");
+            logWrapper.d(TAG, "In toggleControlsVisibility. Hiding player controls");
             playerControls.dismiss();
         } else {
-            Log.d(TAG, "In toggleControlsVisibility. Showing player controls");
+            logWrapper.d(TAG, "In toggleControlsVisibility. Showing player controls");
             if ( isYoutubePlayerViewReady() ) {
                 playerControls.showAtLocation(getView(), Gravity.BOTTOM, 0, 0);
             }
@@ -358,13 +381,13 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
                                         boolean wasRestored) {
-        Log.d(TAG, String.format("In YouTubePlayer.OnInitializedListener.onInitializationSuccess. wasRestored = %s", wasRestored));
+        logWrapper.d(TAG, "In YouTubePlayer.OnInitializedListener.onInitializationSuccess. wasRestored = %s", wasRestored);
         youtubePlayer = player;
         youtubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
         youtubePlayer.setPlayerStateChangeListener(this);
         youtubePlayer.setPlaybackEventListener(this);
         if (!wasRestored) {
-            Log.d(TAG, String.format("In YouTubePlayer.OnInitializedListener.onInitializationSuccess. Cueing video with id = %s", youtubeId));
+            logWrapper.d(TAG, "In YouTubePlayer.OnInitializedListener.onInitializationSuccess. Cueing video with id = %s", youtubeId);
             player.loadVideo(youtubeId);
         }
     }
@@ -372,7 +395,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider,
                                         YouTubeInitializationResult errorReason) {
-        Log.d(TAG, String.format("In YouTubePlayer.OnInitializedListener.onInitializationFailure. errorReason = %s", errorReason.toString()));
+        logWrapper.d(TAG, "In YouTubePlayer.OnInitializedListener.onInitializationFailure. errorReason = %s", errorReason.toString());
         final Activity activity = getActivity();
         if(activity != null) {
             if (errorReason.isUserRecoverableError()) {
@@ -391,7 +414,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onLoading() {
-        Log.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onLoading");
+        logWrapper.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onLoading");
         //Set controls to their initial state and lock them until we have all the information
         //necessary to fully set their state
         playerControls.setEnabled(false);
@@ -401,7 +424,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onLoaded(String videoId) {
-        Log.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onLoaded");
+        logWrapper.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onLoaded");
         //Complete initializing controls and enable them for interaction
         playerControls.setSeekBarMax(youtubePlayer.getDurationMillis());
         if (lastPositionMillis != 0) {
@@ -416,13 +439,13 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onAdStarted() {
-        Log.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onAdStarted");
+        logWrapper.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onAdStarted");
         playerControls.setEnabled(false);
     }
 
     @Override
     public void onVideoStarted() {
-        Log.d(TAG, String.format("In YouTubePlayer.PlayerStateChangeListener.onVideoStarted. youtubePlayer.isPlaying(): %s", youtubePlayer.isPlaying()));
+        logWrapper.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onVideoStarted. youtubePlayer.isPlaying(): %s", youtubePlayer.isPlaying());
         //We need to set button state to either play or pause, because if the video has ended and you scrub back
         //This callback fires but you won't necessarily actually be playing
         playerControls.setPlayPauseButtonState(youtubePlayer.isPlaying() ? PlayerControlsPopupWindow.PlayPauseButtonState.PAUSE : PlayerControlsPopupWindow.PlayPauseButtonState.PLAY);
@@ -430,7 +453,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onVideoEnded() {
-        Log.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onVideoEnded");
+        logWrapper.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onVideoEnded");
         //Since the video has ended, set the controls to the restart state
         playerControls.setSeekBarPosition(playerControls.getSeekBarMax());
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.REPLAY);
@@ -438,7 +461,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onError(YouTubePlayer.ErrorReason errorReason) {
-        Log.d(TAG, String.format("In YouTubePlayer.PlayerStateChangeListener.onError: %s", errorReason));
+        logWrapper.d(TAG, "In YouTubePlayer.PlayerStateChangeListener.onError: %s", errorReason);
         if(errorReason == YouTubePlayer.ErrorReason.UNEXPECTED_SERVICE_DISCONNECTION) {
             if(getActivity() != null) {
                 getActivity().finish();
@@ -452,27 +475,27 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onPlaying() {
-        Log.d(TAG, "In YouTubePlayer.PlaybackEventListener.onPlaying");
+        logWrapper.d(TAG, "In YouTubePlayer.PlaybackEventListener.onPlaying");
         scheduleSeekBarUpdate();
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.PAUSE);
     }
 
     @Override
     public void onPaused() {
-        Log.d(TAG, "In YouTubePlayer.PlaybackEventListener.onPaused");
+        logWrapper.d(TAG, "In YouTubePlayer.PlaybackEventListener.onPaused");
         stopSeekBarUpdates();
         playerControls.setPlayPauseButtonState(PlayerControlsPopupWindow.PlayPauseButtonState.PLAY);
     }
 
     @Override
     public void onStopped() {
-        Log.d(TAG, "In YouTubePlayer.PlaybackEventListener.onStopped");
+        logWrapper.d(TAG, "In YouTubePlayer.PlaybackEventListener.onStopped");
         stopSeekBarUpdates();
     }
 
     @Override
     public void onBuffering(boolean isBuffering) {
-        Log.d(TAG, String.format("In YouTubePlayer.PlaybackEventListener.onBuffering, isBuffering = %s, youtubePlayer.isPlaying = %s", isBuffering, youtubePlayer.isPlaying()));
+        logWrapper.d(TAG, "In YouTubePlayer.PlaybackEventListener.onBuffering, isBuffering = %s, youtubePlayer.isPlaying = %s", isBuffering, youtubePlayer.isPlaying());
 
         //If we're buffering, we're not playing. So we don't need to monitor the video's current position
         //until we stop buffering and start playing again
@@ -485,7 +508,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
 
     @Override
     public void onSeekTo(int newPositionMillis) {
-        Log.d(TAG, String.format("In YouTubePlayer.PlaybackEventListener.onSeekTo, newPositionMillis = %d", newPositionMillis));
+        logWrapper.d(TAG, "In YouTubePlayer.PlaybackEventListener.onSeekTo, newPositionMillis = %d", newPositionMillis);
     }
 
     /**
@@ -552,7 +575,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
          * @param milliseconds The # of milliseconds that the max value should be set to
          */
         public void setSeekBarMax(int milliseconds) {
-            Log.d(TAG, String.format("In PlayerControlsPopupWindow.setSeekBarMax. Setting max to %d", milliseconds));
+            logWrapper.d(TAG, "In PlayerControlsPopupWindow.setSeekBarMax. Setting max to %d", milliseconds);
             seekBar.setMax(milliseconds);
         }
         /**
@@ -580,7 +603,7 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
                     playPauseButton.setImageLevel(REPLAY_BUTTON_LEVEL);
                     break;
                 default:
-                    Log.w(TAG, String.format("Value passed into setPlayPauseButtonState was not a valid state constant. Value passed in: %d", state));
+                    logWrapper.w(TAG, "Value passed into setPlayPauseButtonState was not a valid state constant. Value passed in: %d", state);
                     break;
             }
             playPauseButtonState = state;
@@ -600,9 +623,9 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
          *                     Should be between 0 and {@link CustomUIYouTubePlayerFragment.PlayerControlsPopupWindow#getSeekBarMax()}, inclusive
          */
         public void setSeekBarPosition(int milliseconds) {
-            Log.d(TAG, String.format("In PlayerControlsPopupWindow.setSeekbarPosition. Passed in milliseconds: %d", milliseconds));
+            logWrapper.d(TAG, "In PlayerControlsPopupWindow.setSeekbarPosition. Passed in milliseconds: %d", milliseconds);
             if(milliseconds >=0 && milliseconds <= seekBar.getMax()) {
-                Log.d(TAG, String.format("In PlayerControlsPopupWindow.setSeekbarPosition. Setting seekBar to %d", milliseconds));
+                logWrapper.d(TAG, "In PlayerControlsPopupWindow.setSeekbarPosition. Setting seekBar to %d", milliseconds);
                 seekBar.setProgress(milliseconds);
             }
         }
@@ -630,21 +653,21 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         ///////////////////////
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            Log.d(TAG, String.format("PlayerControlsPopupWindow.onProgressChanged progress:%d, fromUser:%s", progress, fromUser));
+            logWrapper.d(TAG, "PlayerControlsPopupWindow.onProgressChanged progress:%d, fromUser:%s", progress, fromUser);
             String timeFormat = progress / 60000 >= 100 ? HUNDRED_MINUTES_FORMAT : LESS_THAN_HUNDRED_MINUTES_FORMAT;
             elapsedTime.setText(DurationFormatUtils.formatDuration(progress, timeFormat, true));
         }
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-            Log.d(TAG, "PlayerControlsPopupWindow.onStartTrackingTouch");
+            logWrapper.d(TAG, "PlayerControlsPopupWindow.onStartTrackingTouch");
             //The user is manipulating the SeekBar, so stop automatically updating it
             stopSeekBarUpdates();
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            Log.d(TAG, String.format("PlayerControlsPopupWindow.onStopTrackingTouch. Seeking to %d", seekBar.getProgress()));
+            logWrapper.d(TAG, "PlayerControlsPopupWindow.onStopTrackingTouch. Seeking to %d", seekBar.getProgress());
             //The user ended manipulating the SeekBar. Seek the player to the current place, and restart
             //automatic updates if the video is playing
             youtubePlayer.seekToMillis(seekBar.getProgress());
@@ -670,6 +693,37 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
         @Override
         public boolean dispatchTouchEvent(MotionEvent ev) {
             return gestureDetector.onTouchEvent(ev);
+        }
+    }
+
+    /**
+     * Wrapper around Android Log class
+     */
+    private final class LogWrapper {
+
+        public void d(String tag, String msg, Object... args) {
+            if(shouldLog(msg)) {
+                Log.d(tag, assembleMessageString(msg, args));
+            }
+        }
+
+        public void w(String tag, String msg, Object... args) {
+            if(shouldLog(msg)) {
+                Log.w(tag, assembleMessageString(msg, args));
+            }
+        }
+
+        private String assembleMessageString(String msg, Object... args) {
+            if(args.length > 0) {
+                return String.format(msg, args);
+            } else {
+                return msg;
+            }
+
+        }
+
+        private boolean shouldLog(String msg) {
+            return !TextUtils.isEmpty(msg) && (BuildConfig.DEBUG || enableLogging);
         }
     }
 }
