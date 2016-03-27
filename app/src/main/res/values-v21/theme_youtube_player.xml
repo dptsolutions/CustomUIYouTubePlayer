@@ -7,14 +7,6 @@
         <item name="android:seekBarStyle">@style/AppThemeYouTubePlayerControlsSeekBarStyle</item>
     </style>
 
-    <!-- Style for play/pause/replay button on Lollipop and newer -->
-    <style name="AppThemeYouTubePlayerControlsButtonStyle" parent="Widget.AppCompat.ImageButton">
-        <item name="android:backgroundTint">@color/youtube_red</item>
-        <item name="android:tint">@android:color/white</item>
-        <!-- Uncomment line below and specify a level list to override default button icons -->
-        <!--<item name="android:src">@drawable/ic_play_pause_replay_default</item>-->
-    </style>
-
     <!-- Style for scrubber on Lollipop and newer -->
     <style name="AppThemeYouTubePlayerControlsSeekBarStyle" parent="Widget.AppCompat.SeekBar">
         <!-- Following 3 properties set the tint on SeekBar for Lollipop and newer devices -->
