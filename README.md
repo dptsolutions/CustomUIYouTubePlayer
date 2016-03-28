@@ -1,4 +1,4 @@
-# CustomUIYouTubePlayer
+# Custom UI YouTube Player
 An Android library containing a Fragment extending [YouTubePlayerFragment](https://developers.google.com/youtube/android/player/reference/com/google/android/youtube/player/YouTubePlayerFragment) from Google's [YouTube Android Player API](https://developers.google.com/youtube/android/player/), allowing you to easily play YouTube videos in your application with a customizable player controls overlay. For API 16+.
 
 ## Why is this interesting?

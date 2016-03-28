@@ -31,8 +31,6 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
-
 /**
  * Fragment for playing YouTube videos with a custom UI
  */
