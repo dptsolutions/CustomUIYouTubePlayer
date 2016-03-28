@@ -540,6 +540,9 @@ public class CustomUIYouTubePlayerFragment extends YouTubePlayerFragment impleme
             setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
             setFocusable(false);
             setTouchable(true);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                setAttachedInDecor(false);
+            }
 
             elapsedTime = (TextView) getContentView().findViewById(R.id.elapsed_time);
             seekBar = (SeekBar) getContentView().findViewById(R.id.scrubber);
