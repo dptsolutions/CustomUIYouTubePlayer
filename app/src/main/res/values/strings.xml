@@ -2,4 +2,6 @@
     <string name="app_name">YouTube Player Custom Overlay Example</string>
     <string name="unstyled_player_button_text">Launch Player</string>
     <string name="styled_player_button_text">Launch Styled Player</string>
+    <string name="checkAppCompat_text">Use AppCompat\nActivity</string>
+    <string name="checkPlatform_text">Use Platform\nActivity</string>
 </resources>
