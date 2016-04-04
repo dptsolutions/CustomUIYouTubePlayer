@@ -20,20 +20,33 @@ Fortunately, you can get around this "feature" by using a [PopupWindow](http://d
 
 ####Using the Fragment in your own application
 
-1. Add the dependency to your build.gradle
+1. Add the repo to your project's build.gradle
 ```groovy
-compile 'com.dptsolutions.customuiyoutubeplayer:custom-ui-youtube-player:1.0.0'
+    allprojects {
+        repositories {
+            jcenter()
+            ...
+            maven {
+                url 'https://dl.bintray.com/dptsolutions/maven/'
+            }
+        }
+    }
 ```
-2. Copy the `styles.xml` files from the library to your project, rename the theme, and change values as you wish in the defined styles.
 
-3. Create an instance of the Fragment using CustomUIYouTubePlayerFragment.newInstance().
+2. Add the dependency to your application's build.gradle
+```groovy
+compile 'com.dptsolutions.customuiyoutubeplayer:customuiyoutubeplayer:0.1'
+```
+3. Copy the `styles.xml` files from the library to your project, rename the theme, and change values as you wish in the defined styles.
+
+4. Create an instance of the Fragment using CustomUIYouTubePlayerFragment.newInstance().
 **Parameters**
     * *youtubeId* (required): ID of YouTube video
     * *apiKey* (required): Your YouTube Player API key
     * *themeResourceId* (optional): The ID of your custom theme from step 2 to style the player controls
     * *enableDebugLogging* (optional): Set to true if you want to see the Fragment's debug messages
-4. Add `android:configChanges="keyboardHidden|orientation|screenSize"` to the `<Activity>` tag containing the Fragment in your manifest.
-5. Profit!
+5. Add `android:configChanges="keyboardHidden|orientation|screenSize"` to the `<Activity>` tag containing the Fragment in your manifest.
+6. Profit!
 
 ## License
 Copyright 2016 Don Phillips
