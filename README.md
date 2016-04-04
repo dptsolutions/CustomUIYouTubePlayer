@@ -22,15 +22,15 @@ Fortunately, you can get around this "feature" by using a [PopupWindow](http://d
 
 1. Add the repo to your project's build.gradle
 ```groovy
-    allprojects {
-        repositories {
-            jcenter()
-            ...
-            maven {
-                url 'https://dl.bintray.com/dptsolutions/maven/'
-            }
-        }
-    }
+allprojects {
+   repositories {
+      jcenter()
+      ...
+      maven {
+            url 'https://dl.bintray.com/dptsolutions/maven/'
+      }
+   }
+}
 ```
 
 2. Add the dependency to your application's build.gradle
