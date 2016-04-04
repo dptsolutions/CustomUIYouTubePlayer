@@ -2,6 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
+//Project Properties
+group 'com.dptsolutions.customuiyoutubeplayer'
+version '0.1'
+def projectName = 'custom-ui-youtube-player'
+def projectFriendlyName = 'Custom UI YouTube Player'
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -10,7 +16,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName project.version
         //This is for vector compat drawables w/ 1.5 Gradle plugin
         generatedDensities = []
     }
@@ -28,38 +34,33 @@ android {
     }
 }
 
-//Project Properties
-group 'com.dptsolutions.customuiyoutubeplayer'
-version '1.0-SNAPSHOT'
-def projectName = 'custom-ui-youtube-player'
-
-//bintray {
-//    user = project.hasProperty('bintrayUserName') ? project.property('bintrayUserName') : System.getenv('BINTRAY_USER')
-//    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-//    configurations = ['archives']
-//    pkg {
-//        repo = 'android'
-//        name = projectName
-//        desc = 'An Android library containing a Fragment extending YouTubePlayerFragment from Google\'s YouTube Android Player API, allowing you to easily play YouTube videos in your application with a customizable player controls overlay. For API 16+.'
-//        licenses = ['Apache-2.0']
-//        labels = ['android', 'aar']
-//        websiteUrl = project.property('siteUrl')
-//        issueTrackerUrl = project.property('issueTrackerUrl')
-//        vcsUrl = project.property('gitUrl')
-//        version {
-//            name = project.version
-//            desc = 'Custom UI YouTube Player'
-//            released  = new Date()
-//        }
-//    }
-//}
+bintray {
+    user = project.hasProperty('bintrayUserName') ? project.property('bintrayUserName') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = projectName
+        desc = 'An Android library containing a Fragment extending YouTubePlayerFragment from Google\'s YouTube Android Player API, allowing you to easily play YouTube videos in your application with a customizable player controls overlay. For API 16+.'
+        licenses = ['Apache-2.0']
+        labels = ['android', 'aar']
+        websiteUrl = project.property('siteUrl')
+        issueTrackerUrl = project.property('issueTrackerUrl')
+        vcsUrl = project.property('gitUrl')
+        version {
+            name = project.version
+            desc = projectFriendlyName
+            released  = new Date()
+        }
+    }
+}
 
 install {
     repositories.mavenInstaller {
         pom {
             project {
                 packaging 'aar'
-                name = projectName
+                name = projectFriendlyName
                 url siteUrl
                 licenses {
                     license {
