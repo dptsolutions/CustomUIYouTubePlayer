@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 android {
@@ -27,15 +28,93 @@ android {
     }
 }
 
-bintray {
-    user = bintrayUserName
-    key = bintrayApiKey
-    pkg {
-        repo = 'maven'
-        name = 'custom-ui-youtube-player'
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/dptsolutions/CustomUIYoutubePlayer.git'
+//Project Properties
+group 'com.dptsolutions.customuiyoutubeplayer'
+version '1.0-SNAPSHOT'
+def projectName = 'custom-ui-youtube-player'
+
+//bintray {
+//    user = project.hasProperty('bintrayUserName') ? project.property('bintrayUserName') : System.getenv('BINTRAY_USER')
+//    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+//    configurations = ['archives']
+//    pkg {
+//        repo = 'android'
+//        name = projectName
+//        desc = 'An Android library containing a Fragment extending YouTubePlayerFragment from Google\'s YouTube Android Player API, allowing you to easily play YouTube videos in your application with a customizable player controls overlay. For API 16+.'
+//        licenses = ['Apache-2.0']
+//        labels = ['android', 'aar']
+//        websiteUrl = project.property('siteUrl')
+//        issueTrackerUrl = project.property('issueTrackerUrl')
+//        vcsUrl = project.property('gitUrl')
+//        version {
+//            name = project.version
+//            desc = 'Custom UI YouTube Player'
+//            released  = new Date()
+//        }
+//    }
+//}
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name = projectName
+                url siteUrl
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id mavenDeveloperId
+                        name mavenDeveloperName
+                        email mavenEmail
+                    }
+                }
+
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+
+                }
+            }
+        }
     }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+task listPublishingProperties {
+    println 'bintrayUserName - ' + bintrayUserName
+    println 'bintrayApiKey - ' + bintrayApiKey
+    println 'mavenDeveloperId - ' + mavenDeveloperId
+    println 'mavenDeveloperName - ' + mavenDeveloperName
+    println 'mavenEmail - ' + mavenEmail
+    println 'siteUrl - ' + siteUrl
+    println 'gitUrl - ' + gitUrl
+    println 'issueTrackerUrl - ' + issueTrackerUrl
 }
 
 dependencies {
